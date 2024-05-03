@@ -18,23 +18,24 @@
 
     <EditText
         android:id="@+id/username"
-        android:layout_width="150dp"
+        android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginTop="150dp"
-        android:gravity="center"
-        android:hint="Username"
+        android:layout_marginTop="200dp"
+        android:gravity="left"
+        android:hint="User :"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="150dp"
+        android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="50dp"
-        android:gravity="center"
-        android:hint="Password"
+        android:gravity="left"
+        android:hint="Password :"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,8 +44,8 @@
     <TextView
         android:id="@+id/account"
         android:layout_width="170dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="200dp"
         android:gravity="center"
         android:hint="Register"
         android:onClick="CreateAccount"
@@ -59,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:width="110dp"
-        android:height="100dp"
+        android:height="50dp"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
@@ -68,18 +69,18 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account" />
+        app:layout_constraintTop_toBottomOf="@+id/password" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="120dp"
+        android:layout_width="110dp"
         android:layout_height="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="15dp"
         android:gravity="center"
         android:text="Forget"
         android:onClick="Forget"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password"/>
+        app:layout_constraintTop_toBottomOf="@+id/loginButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
