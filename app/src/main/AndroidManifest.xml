@@ -9,24 +9,27 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icondonate"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/icondonate"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication"
-        tools:targetApi="31">
-        <meta-data
-            android:name="com.google.android.actions" />
-
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        tools:targetApi="29">
+        <activity
+            android:name=".Search"
+            android:exported="false" />
+        <activity
+            android:name=".Slideview"
+            android:exported="false" />
         <activity
             android:name=".Homepage"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".security_page"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".create_account"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".Main"
             android:exported="true">
