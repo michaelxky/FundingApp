@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="nav">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_collection"
+            android:icon="@drawable/baseline_archive_24"
+            android:title="Collection"/>
+        <item
+            android:id="@+id/nav_Intro"
+            android:icon="@drawable/baseline_book_24"
+            android:title="Introduction"
+            />
+    </group>
+    <item android:title="Communication">
+        <menu>
+            <item android:id="@+id/nav_about"
+                  android:icon="@drawable/baseline_build_24"
+                  android:title="About"/>
+            <item
+                android:id="@+id/nav_out"
+                android:icon="@drawable/baseline_file_download_24"
+                android:title="Log Out"/>
+        </menu>
+    </item>
+</menu>

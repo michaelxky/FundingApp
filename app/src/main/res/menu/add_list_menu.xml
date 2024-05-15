@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/Addname"
+        android:title="Activity Name"
+        android:icon="@drawable/baseline_add_24"
+        >
+
+    </item>
+    <item
+        android:id="@+id/holder"
+        android:title="Holder"
+        android:icon="@drawable/baseline_add_24"
+        >
+    </item>
+</menu>
