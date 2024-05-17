@@ -10,6 +10,7 @@ import androidx.core.content.FileProvider;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,9 +25,18 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +44,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class postPublish extends AppCompatActivity {
     private static final String TAG = "uploadPic";
@@ -42,17 +54,23 @@ public class postPublish extends AppCompatActivity {
     private Uri imageUri;
     private ImageView ivPics;
     private String imageBase64;
-
+    private EditText introText;
+    private ProgressDialog progressDialog;
+    private static final String POST_URL = "https://studev.groept.be/api/a23PT414/uploadPost";
+    private RequestQueue requestQueue;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("ActivityLifecycle", "postPublish Activity Created");
         setContentView(R.layout.activity_post_publish);
+        requestQueue = Volley.newRequestQueue(this);
         initView();
     }
 
+
     private void initView() {
         ivPics = findViewById(R.id.iv_photo);
+        introText = findViewById(R.id.edit_text);
     }
 
     public void takePhoto(View view) {
@@ -117,6 +135,7 @@ public class postPublish extends AppCompatActivity {
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(imageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    bitmap = imageUtil.getResizedBitmap(bitmap,400);
                     if (bitmap != null) {
                         ivPics.setImageBitmap(bitmap);
                         imageBase64 = imageUtil.imageToBase64(bitmap);
@@ -142,7 +161,9 @@ public class postPublish extends AppCompatActivity {
             Log.d(TAG, "displayImage: " + imagePath);
             try{
                 Bitmap bitmap =MediaStore.Images.Media.getBitmap(getContentResolver(),imagePath);
+                bitmap = imageUtil.getResizedBitmap(bitmap, 400);
                 ivPics.setImageBitmap(bitmap);
+                imageBase64 = imageUtil.imageToBase64(bitmap);
             }
             catch (Exception e)
             {
@@ -168,5 +189,39 @@ public class postPublish extends AppCompatActivity {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent, REQUEST_CODE_CHOOSE);
+    }
+
+    /**
+     * Submits text, images and ways of supports to the database
+     */
+    public void onSubmitClicked(View view) {
+        progressDialog = new ProgressDialog(postPublish.this);
+        progressDialog.setMessage("Uploading, please wait...");
+        progressDialog.show();
+
+//Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
+        StringRequest submitRequest = new StringRequest (Request.Method.POST, POST_URL,  new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //Turn the progress widget off
+                progressDialog.dismiss();
+                Toast.makeText(postPublish.this, "Post request executed", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(postPublish.this, "Post request failed", Toast.LENGTH_LONG).show();
+            }
+        }) { //NOTE THIS PART: here we are passing the parameter to the webservice, NOT in the URL!
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("image", imageBase64);
+                params.put("text", introText.getText().toString());
+                return params;
+            }
+        };
+
+        requestQueue.add(submitRequest);
     }
 }
