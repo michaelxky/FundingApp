@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -36,16 +40,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import java.util.Calendar;
 import android.widget.DatePicker;
 import android.app.DatePickerDialog;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 public class postPublish extends AppCompatActivity {
     private static final String TAG = "uploadPic";
     public static final int REQUEST_CODE_TAKE = 1;
     public static final int REQUEST_CODE_CHOOSE = 0;
+    private static final int REQUEST_CODE_MAP_PICKER = 3;
     private Uri imageUri;
     private ImageView ivPics;
     private String imageBase64;
@@ -59,6 +72,7 @@ public class postPublish extends AppCompatActivity {
     private Map<String, String[]> fundingMap;
     private Map<String, String[]> activityMap;
     private Map<String, String[]> donationMap;
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +98,7 @@ public class postPublish extends AppCompatActivity {
         fundingMap = new HashMap<>();
         activityMap = new HashMap<>();
         donationMap = new HashMap<>();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
 
@@ -160,11 +175,11 @@ public class postPublish extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        } else if (requestCode == REQUEST_CODE_CHOOSE) {
-            if (resultCode == RESULT_OK && data != null) {
-                Log.d(TAG, "onActivityResult: URI: " + data.getData());
-                Uri uri = data.getData();
-                displayImage(uri);
+        } else if (requestCode == REQUEST_CODE_MAP_PICKER && resultCode == RESULT_OK) {
+            if (data != null && data.hasExtra("selected_address")) {
+                String selectedAddress = data.getStringExtra("selected_address");
+                EditText locationEditText = findViewById(R.id.location);
+                locationEditText.setText(selectedAddress);
             }
         }
     }
@@ -204,6 +219,61 @@ public class postPublish extends AppCompatActivity {
         intent.setType("image/*");
         startActivityForResult(intent, REQUEST_CODE_CHOOSE);
     }
+
+    /**
+    Get current location:
+     */
+    private void getCurrentLocation(EditText locationEditText) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 3);
+        } else {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    // Use Geocoder to get city name from coordinates
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        if (addresses != null && !addresses.isEmpty()) {
+                            String city = addresses.get(0).getLocality();
+                            locationEditText.setText(city);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // Request new location if last known location is not available
+                    LocationRequest locationRequest = LocationRequest.create();
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    locationRequest.setInterval(5000);
+                    locationRequest.setFastestInterval(2000);
+                    fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            if (locationResult == null) {
+                                return;
+                            }
+                            for (Location loc : locationResult.getLocations()) {
+                                if (loc != null) {
+                                    fusedLocationClient.removeLocationUpdates(this);
+                                    Geocoder geocoder = new Geocoder(postPublish.this, Locale.getDefault());
+                                    try {
+                                        List<Address> addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+                                        if (addresses != null && !addresses.isEmpty()) {
+                                            String city = addresses.get(0).getLocality();
+                                            locationEditText.setText(city);
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    }, getMainLooper());
+                }
+            });
+        }
+    }
+
 
     /**
      * Submits text, images and ways of supports to the database
@@ -246,6 +316,7 @@ public class postPublish extends AppCompatActivity {
                     params.put("volreq", voluntaryData[1]);
                     params.put("volbegin", voluntaryData[2]);
                     params.put("volend", voluntaryData[3]);
+                    params.put("volcity", voluntaryData[4]);
                 }
                 if (donationData != null) {
                     params.put("donationgoal", donationData[0]);
@@ -319,6 +390,9 @@ public class postPublish extends AppCompatActivity {
         final EditText requirements = dialogView.findViewById(R.id.requirements);
         final EditText beginDate = dialogView.findViewById(R.id.beginDate);
         final EditText endDate = dialogView.findViewById(R.id.endDate);
+        final EditText locationEditText = dialogView.findViewById(R.id.location);
+        ImageButton selectLocationButton = dialogView.findViewById(R.id.select_location);
+
 // Load previously saved data if available
         if (activityMap.containsKey(title)) {
             String[] details = activityMap.get(title);
@@ -326,10 +400,18 @@ public class postPublish extends AppCompatActivity {
             requirements.setText(details[1]);
             beginDate.setText(details[2]);
             endDate.setText(details[3]);
+            locationEditText.setText(details[4]);  // Ensure location data is stored as well
         }
         // Set up date picker for beginDate and endDate
         beginDate.setOnClickListener(v -> showDatePickerDialog(beginDate));
         endDate.setOnClickListener(v -> showDatePickerDialog(endDate));
+
+        // Set up location picker
+        locationEditText.setOnClickListener(v -> getCurrentLocation(locationEditText));
+        selectLocationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(postPublish.this, MapPickerActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_MAP_PICKER);
+        });
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Handle the positive button click event here
@@ -337,11 +419,12 @@ public class postPublish extends AppCompatActivity {
             String quality = requirements.getText().toString();
             String start = beginDate.getText().toString();
             String end = endDate.getText().toString();
+            String location = locationEditText.getText().toString();
             /*
             Store the input details to a HashMap object, to be shown on EditText block when the
             same button of support ways is clicked again
              */
-            activityMap.put(title, new String[]{nbr, quality, start, end});
+            activityMap.put(title, new String[]{nbr, quality, start, end, location});
             // Process the input details as needed
         });
 
