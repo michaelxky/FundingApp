@@ -39,16 +39,13 @@
         android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:hint="Select Location"
-        android:focusable="false"
-        android:clickable="true"
         android:padding="16dp" />
 
     <ImageButton
         android:id="@+id/select_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_mapmode" />
+        android:src="@android:drawable/ic_menu_mylocation" />
 
 </LinearLayout>

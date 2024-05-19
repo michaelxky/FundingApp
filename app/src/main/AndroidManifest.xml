@@ -24,9 +24,6 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="29">
         <activity
-            android:name=".MapPickerActivity"
-            android:exported="false" />
-        <activity
             android:name=".postPublish"
             android:exported="true">
             <intent-filter>

@@ -175,7 +175,14 @@ public class postPublish extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        } else if (requestCode == REQUEST_CODE_MAP_PICKER && resultCode == RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_CHOOSE) {
+            if (resultCode == RESULT_OK && data != null) {
+                Log.d(TAG, "onActivityResult: URI: " + data.getData());
+                Uri uri = data.getData();
+                displayImage(uri);
+            }
+        }
+        else if (requestCode == REQUEST_CODE_MAP_PICKER && resultCode == RESULT_OK) {
             if (data != null && data.hasExtra("selected_address")) {
                 String selectedAddress = data.getStringExtra("selected_address");
                 EditText locationEditText = findViewById(R.id.location);
@@ -183,6 +190,7 @@ public class postPublish extends AppCompatActivity {
             }
         }
     }
+
 
     private void displayImage(Uri imagePath) {
         if (imagePath != null)
@@ -219,13 +227,12 @@ public class postPublish extends AppCompatActivity {
         intent.setType("image/*");
         startActivityForResult(intent, REQUEST_CODE_CHOOSE);
     }
-
     /**
-    Get current location:
+     * Fetch and process current location data
      */
     private void getCurrentLocation(EditText locationEditText) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 3);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
         } else {
             fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
                 if (location != null) {
@@ -322,6 +329,7 @@ public class postPublish extends AppCompatActivity {
                     params.put("donationgoal", donationData[0]);
                     params.put("donationbegin", donationData[1]);
                     params.put("donationend", donationData[2]);
+                    params.put("donationcity", donationData[3]);
                 }
                 return params;
             }
@@ -392,7 +400,6 @@ public class postPublish extends AppCompatActivity {
         final EditText endDate = dialogView.findViewById(R.id.endDate);
         final EditText locationEditText = dialogView.findViewById(R.id.location);
         ImageButton selectLocationButton = dialogView.findViewById(R.id.select_location);
-
 // Load previously saved data if available
         if (activityMap.containsKey(title)) {
             String[] details = activityMap.get(title);
@@ -400,18 +407,14 @@ public class postPublish extends AppCompatActivity {
             requirements.setText(details[1]);
             beginDate.setText(details[2]);
             endDate.setText(details[3]);
-            locationEditText.setText(details[4]);  // Ensure location data is stored as well
+            locationEditText.setText(details[4]);
         }
         // Set up date picker for beginDate and endDate
         beginDate.setOnClickListener(v -> showDatePickerDialog(beginDate));
         endDate.setOnClickListener(v -> showDatePickerDialog(endDate));
 
         // Set up location picker
-        locationEditText.setOnClickListener(v -> getCurrentLocation(locationEditText));
-        selectLocationButton.setOnClickListener(v -> {
-            Intent intent = new Intent(postPublish.this, MapPickerActivity.class);
-            startActivityForResult(intent, REQUEST_CODE_MAP_PICKER);
-        });
+        selectLocationButton.setOnClickListener(v -> getCurrentLocation(locationEditText));
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Handle the positive button click event here
@@ -448,27 +451,34 @@ public class postPublish extends AppCompatActivity {
         final EditText expectedItems = dialogView.findViewById(R.id.epectedItems);
         final EditText beginDate = dialogView.findViewById(R.id.beginDate);
         final EditText endDate = dialogView.findViewById(R.id.endDate);
+        final EditText locationEditText = dialogView.findViewById(R.id.location);
+        ImageButton selectLocationButton = dialogView.findViewById(R.id.select_location);
 // Load previously saved data if available
         if (donationMap.containsKey(title)) {
             String[] details = donationMap.get(title);
             expectedItems.setText(details[0]);
             beginDate.setText(details[1]);
             endDate.setText(details[2]);
+            locationEditText.setText(details[3]);
         }
         // Set up date picker for beginDate and endDate
         beginDate.setOnClickListener(v -> showDatePickerDialog(beginDate));
         endDate.setOnClickListener(v -> showDatePickerDialog(endDate));
+
+        // Set up location picker
+        selectLocationButton.setOnClickListener(v -> getCurrentLocation(locationEditText));
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Handle the positive button click event here
             String items = expectedItems.getText().toString();
             String start = beginDate.getText().toString();
             String end = endDate.getText().toString();
+            String location = locationEditText.getText().toString();
             /*
             Store the input details to a HashMap object, to be shown on EditText block when the
             same button of support ways is clicked again
              */
-            donationMap.put(title, new String[]{items, start, end});
+            donationMap.put(title, new String[]{items, start, end, location});
             // Process the input details as needed
         });
 
