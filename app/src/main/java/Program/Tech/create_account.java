@@ -1,5 +1,4 @@
 package Program.Tech;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,9 +39,14 @@ public class create_account extends AppCompatActivity {
             return insets;
         });
     }
-    public void createAccount(String ID, String Name, String Password, String Question, String Answer) {
+
+    public void createAccount(String Name, String Password, String Question, String Answer) {
         // Proper URL for the API endpoint to insert new user
         String url = "https://studev.groept.be/api/a23PT414/Register";
+
+        // Hash the password and the answer before sending them to the server
+        String hashedPassword = BCrypt.hashpw(Password, BCrypt.gensalt());
+        String hashedAnswer = BCrypt.hashpw(Answer, BCrypt.gensalt());
 
         // Create a request queue for Volley
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -97,11 +102,10 @@ public class create_account extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 // Add parameters to the request
                 Map<String, String> params = new HashMap<>();
-                params.put("id", ID);
                 params.put("name", Name);
-                params.put("pass", Password);
+                params.put("pass", hashedPassword); // Use the hashed password
                 params.put("ques", Question);
-                params.put("ans", Answer);
+                params.put("ans", hashedAnswer); // Use the hashed answer
                 return params;
             }
         };
@@ -111,21 +115,19 @@ public class create_account extends AppCompatActivity {
     }
 
     public void Create(View view) {
-        EditText IDEditText = findViewById(R.id.ID);
         EditText usernameEditText = findViewById(R.id.username);
         EditText passwordEditText = findViewById(R.id.password);
         EditText securityQuestionEditText = findViewById(R.id.Question);
         EditText answerEditText = findViewById(R.id.Answer);
 
-        String ID = IDEditText.getText().toString();
         String Name = usernameEditText.getText().toString();
         String Password = passwordEditText.getText().toString();
         String Question = securityQuestionEditText.getText().toString();
         String Answer = answerEditText.getText().toString();
 
-        createAccount(ID,Name, Password, Question, Answer);
-        startActivity(new Intent(this, Main.class));
+        createAccount(Name, Password, Question, Answer);
+        Intent intent = new Intent(this, Main.class);
+        startActivity(intent);
     }
-
 
 }

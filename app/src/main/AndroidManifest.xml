@@ -25,11 +25,7 @@
 
         <activity
             android:name=".postPublish"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
         </activity>
 
         <activity
@@ -40,7 +36,13 @@
             android:exported="false" />
         <activity
             android:name=".Homepage"
-            android:exported="false" />
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".security_page"
             android:exported="false" />
@@ -61,5 +63,6 @@
                 android:resource="@xml/files" />
         </provider>
     </application>
+
 
 </manifest>
