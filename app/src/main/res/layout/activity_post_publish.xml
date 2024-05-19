@@ -8,7 +8,7 @@
     tools:context=".postPublish">
 
     <Button
-        android:id="@+id/Button"
+        android:id="@+id/submit"
         android:onClick="onSubmitClicked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,32 +88,37 @@
         app:layout_constraintVertical_bias="0.009"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnFunding"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        android:text="Funding"
+        app:layout_constraintTop_toBottomOf="@+id/iv_photo"
+        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnActivity" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnActivity"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Activity"
+        app:layout_constraintTop_toBottomOf="@+id/iv_photo"
+        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintStart_toEndOf="@id/btnFunding"
+        app:layout_constraintEnd_toStartOf="@id/btnDonation" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnDonation"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        android:text="Donation"
+        app:layout_constraintTop_toBottomOf="@+id/iv_photo"
+        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintStart_toEndOf="@id/btnActivity"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
