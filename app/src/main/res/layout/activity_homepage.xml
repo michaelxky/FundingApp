@@ -22,20 +22,27 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
 
+
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:src="@drawable/image_border"
-            android:scaleType="centerCrop"
-            android:background="@drawable/donation_show"
+            android:id="@+id/image1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
-            app:layout_constraintVertical_bias="0.1" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="144dp"
+            android:layout_marginBottom="48dp"
+            android:text="Get Photo"
+            android:onClick="onBtnRetrieveClicked"
+            app:flow_horizontalBias="0.1"
+            app:layout_constraintBottom_toTopOf="@id/test_button"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/test_button"
@@ -49,7 +56,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image" />
+            app:layout_constraintTop_toBottomOf="@id/image1"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

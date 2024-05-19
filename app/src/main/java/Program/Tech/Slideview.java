@@ -1,5 +1,6 @@
 package Program.Tech;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -18,11 +19,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+import org.w3c.dom.Text;
+
+import java.text.BreakIterator;
+
 public class Slideview extends AppCompatActivity {
     private  Toolbar toolBar;
-    private NavigationView nav;
     private DrawerLayout drawerLayout;
+
+    private TextView textView;
+
+    private NavigationView nav;
     private BottomNavigationView bottomNavigationView;
+
     private Toolbar add;
     private HomeFragment homeFragment;
     private SearchFragment searchFragment;
@@ -73,18 +82,13 @@ public class Slideview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_slideview);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
 
-        });
         toolBar = findViewById(R.id.toolBar);
-        nav = findViewById(R.id.nav);
         drawerLayout = findViewById(R.id.drawLayout);
+        nav = findViewById(R.id.nav);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        selectedFragment(0);
+        //selectedFragment(0);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -99,20 +103,32 @@ public class Slideview extends AppCompatActivity {
                 return false;
             }
         });
-
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawerLayout,toolBar,R.string.open,R.string.close);
         //initialization
         toggle.syncState();
 
         drawerLayout.addDrawerListener(toggle);
 
+
         nav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.log_in) {
+                    Intent intent = new Intent(Slideview.this, Main.class);
+                    startActivity(intent);
+                    return true; // 表示已处理点击事件
+                } else if (item.getItemId() == R.id.nav_about ||
+                        item.getItemId() == R.id.nav_out ||
+                        item.getItemId() == R.id.nav_collection ||
+                        item.getItemId() == R.id.nav_Intro) {
+                    finish();
+                    return true; // 表示已处理点击事件
+                }
+                // 如果未处理点击事件，返回 false
                 return false;
             }
         });
+
 
     }
 }

@@ -20,12 +20,13 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class security_page extends AppCompatActivity {
     EditText userNameEditText;
     EditText answerEditText;
     TextView questionTextView;
-    String correctAnswer; // 保存正确的答案
+    String correctAnswerHash; // 保存正确答案的哈希值
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +70,10 @@ public class security_page extends AppCompatActivity {
                 for (int i = 0; i < responses.length(); i++) {
                     JSONObject response = responses.getJSONObject(i);
                     // 检查Username是否匹配
-                    if (response.getString("Username").equals(username)) {
-                        // 获取Security Question 和正确的答案
-                        String question = response.getString("Security_Question");
-                        correctAnswer = response.getString("Answer"); // 保存正确的答案
+                    if (response.getString("Name").equals(username)) {
+                        // 获取Security Question 和正确的答案哈希值
+                        String question = response.getString("Question");
+                        correctAnswerHash = response.getString("Answer"); // 保存正确答案的哈希值
                         // 在页面上显示 Security_Question
                         questionTextView.setText(question);
                         return; // 找到匹配的Username后，跳出循环
@@ -83,7 +84,7 @@ public class security_page extends AppCompatActivity {
 
             } catch (JSONException e) {
                 Log.e("JSONException", "Error parsing JSON response: " + e.getMessage());
-                Toast.makeText(security_page.this, "Error fetching security information", Toast.LENGTH_SHORT).show();;
+                Toast.makeText(security_page.this, "Error fetching security information", Toast.LENGTH_SHORT).show();
             }
         }, error -> {
             Log.e("VolleyError", "Error communicating with server: " + error.getMessage());
@@ -95,11 +96,11 @@ public class security_page extends AppCompatActivity {
     // 当用户点击提交按钮时调用
     public void Submit(View view) {
         // 获取用户输入的Answer
-        String answer = answerEditText.getText().toString();
+        String answer = answerEditText.getText().toString().trim();
 
         // 验证答案是否正确
-        if (correctAnswer != null && answer.equals(correctAnswer)) {
-            // 答案正确，跳转到 OverviewPage
+        if (correctAnswerHash != null && BCrypt.checkpw(answer, correctAnswerHash)) {
+            // 答案正确，跳转到 Homepage
             startActivity(new Intent(this, Homepage.class));
         } else {
             // 答案不正确，显示错误提示
