@@ -297,6 +297,8 @@ public class postPublish extends AppCompatActivity {
                 //Turn the progress widget off
                 progressDialog.dismiss();
                 Toast.makeText(postPublish.this, "Post request executed", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(postPublish.this, Slideview.class);
+                startActivity(intent);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -500,5 +502,10 @@ public class postPublish extends AppCompatActivity {
                     editText.setText(date);
                 }, year, month, day);
         datePickerDialog.show();
+    }
+
+    public void back(View view) {
+        Intent intent = new Intent(this,Slideview.class);
+        startActivity(intent);
     }
 }

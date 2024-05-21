@@ -58,6 +58,7 @@ public class ActFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(requireActivity(), Homepage.class));// 处理点击事件，例如打开一个新的活动或执行其他操作
             }
         });

@@ -12,10 +12,11 @@
         android:layout_height="100dp"
         android:src="@drawable/icon"/>
     <TextView
+        android:id="@+id/welcomeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:text="Donation, Better World"
+        android:text=""
         android:textSize="25dp"/>
 
 </LinearLayout>

@@ -97,11 +97,13 @@ public class security_page extends AppCompatActivity {
     public void Submit(View view) {
         // 获取用户输入的Answer
         String answer = answerEditText.getText().toString().trim();
-
+        String username = userNameEditText.getText().toString().trim();
         // 验证答案是否正确
         if (correctAnswerHash != null && BCrypt.checkpw(answer, correctAnswerHash)) {
             // 答案正确，跳转到 Homepage
-            startActivity(new Intent(this, Homepage.class));
+            Intent intent = new Intent(this, Slideview.class);
+            intent.putExtra("username", username);
+            startActivity(intent);
         } else {
             // 答案不正确，显示错误提示
             Toast.makeText(this, "Incorrect answer", Toast.LENGTH_SHORT).show();

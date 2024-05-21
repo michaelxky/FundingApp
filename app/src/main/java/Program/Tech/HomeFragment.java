@@ -1,5 +1,6 @@
 package Program.Tech;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 
@@ -53,16 +54,6 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        // 找到 ImageView 对象
-        ImageView imageView = view.findViewById(R.id.image);
-        // 设置动画资源为 ImageView 的背景
-        imageView.setBackgroundResource(R.drawable.donation_show);
-        // 将背景转换为 AnimationDrawable 对象
-        AnimationDrawable animationDrawable = (AnimationDrawable) imageView.getBackground();
-        // 启动动画
-        animationDrawable.start();
-
         return view;
     }
 
