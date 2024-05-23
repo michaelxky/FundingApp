@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -52,8 +53,11 @@ public class postOverview extends AppCompatActivity {
     private TextView postText;
     private TextView postTitle;
     private TextView funding;
+    private CardView cardFund;
     private TextView volunteer;
+    private CardView cardVolunteer;
     private TextView donation;
+    private CardView cardDonation;
     private RequestQueue requestQueue;
     private static final String GET_POST_URL = "https://studev.groept.be/api/a23PT414/showPost";
     private static final String GET_SUPPORT_URL = "https://studev.groept.be/api/a23PT414/showSupport";
@@ -85,8 +89,11 @@ public class postOverview extends AppCompatActivity {
         postText =  findViewById(R.id.post_text);
         postTitle =  findViewById(R.id.title);
         funding = findViewById(R.id.funding);
+        cardFund = findViewById(R.id.cardViewFund);
         volunteer = findViewById(R.id.volunteer);
+        cardVolunteer = findViewById(R.id.cardViewVolunteer);
         donation = findViewById(R.id.donation);
+        cardDonation = findViewById(R.id.cardViewDonation);
         requestQueue = Volley.newRequestQueue(this);
         btnFund = findViewById(R.id.fundButton);
         //Define Click listener of each support buttons:
@@ -200,11 +207,11 @@ public class postOverview extends AppCompatActivity {
                                 //Funding details
                                 if(databaseFundGoal.equals("null"))
                                 {
-                                    funding.setVisibility(View.GONE);
+                                    cardFund.setVisibility(View.GONE);
                                 }
                                 else
                                 {
-                                    funding.setVisibility(View.VISIBLE);
+                                    cardFund.setVisibility(View.VISIBLE);
                                     String fundingDetails = "Funding\n" + "I want to raise: " + databaseFundGoal + "\n" +
                                             "The funding begins:" + fundBegin + "\n" +
                                             "The funding ends: " + fundEnd;
@@ -213,11 +220,11 @@ public class postOverview extends AppCompatActivity {
                                 //Voluntary details
                                 if(databaseVolunteerNbr.equals("null"))
                                 {
-                                    volunteer.setVisibility(View.GONE);
+                                    cardVolunteer.setVisibility(View.GONE);
                                 }
                                 else
                                 {
-                                    volunteer.setVisibility(View.VISIBLE);
+                                    cardVolunteer.setVisibility(View.VISIBLE);
                                     String voluntaryDetails = "Volunteer\n" + "Activity Name: " + databaseVoluntaryTitle +"\n"+
                                             "We need " + databaseVolunteerNbr +" volunteers\n"+
                                             "The volunteer should be "+ volunteerRequirement + "\n"+
@@ -229,11 +236,11 @@ public class postOverview extends AppCompatActivity {
                                 //Donation details
                                 if(databaseDonationGoal.equals("null"))
                                 {
-                                    donation.setVisibility(View.GONE);
+                                    cardDonation.setVisibility(View.GONE);
                                 }
                                 else
                                 {
-                                    donation.setVisibility(View.VISIBLE);
+                                    cardDonation.setVisibility(View.VISIBLE);
                                     String donationDetails = "donation\n" + "I want: " + databaseDonationGoal + "\n" +
                                             "The donation begins:" + donationBegin + "\n" +
                                             "The donation ends: " + donationEnd+ "\n" +
@@ -241,15 +248,15 @@ public class postOverview extends AppCompatActivity {
                                     donation.setText(donationDetails);
                                 }
                                 // Adjust constraints dynamically
-                                ConstraintLayout.LayoutParams volunteerParams = (ConstraintLayout.LayoutParams) volunteer.getLayoutParams();
-                                ConstraintLayout.LayoutParams donationParams = (ConstraintLayout.LayoutParams) donation.getLayoutParams();
-                                //Set funding location
+                                ConstraintLayout.LayoutParams volunteerParams = (ConstraintLayout.LayoutParams) cardVolunteer.getLayoutParams();
+                                ConstraintLayout.LayoutParams donationParams = (ConstraintLayout.LayoutParams) cardDonation.getLayoutParams();
+                                //Set volunteer location
                                 if (databaseFundGoal.equals("null")) {
                                     volunteerParams.topToBottom = R.id.iv_photo;
                                 } else {
-                                    volunteerParams.topToBottom = R.id.funding; // Or the parent view or some other reference
+                                    volunteerParams.topToBottom = R.id.cardViewFund; // Or the parent view or some other reference
                                 }
-                                //Set volunteer location
+                                //Set donation location
                                 if (databaseVoluntaryTitle.equals("null")) {
                                     if (databaseFundGoal.equals("null"))
                                     {
@@ -257,11 +264,11 @@ public class postOverview extends AppCompatActivity {
                                     }
                                     else
                                     {
-                                        donationParams.topToBottom = R.id.funding;
+                                        donationParams.topToBottom = R.id.cardViewFund;
                                     }
 
                                 } else {
-                                    donationParams.topToBottom = R.id.volunteer; // Or the parent view or some other reference
+                                    donationParams.topToBottom = R.id.cardViewVolunteer; // Or the parent view or some other reference
                                 }
 
                             } else {
@@ -277,7 +284,7 @@ public class postOverview extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // Log the error message
                 Log.e(TAG, "Request error: " + error.getMessage());
-                Toast.makeText(postOverview.this, "Request failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(postOverview.this, "Show Support Request failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
         );
