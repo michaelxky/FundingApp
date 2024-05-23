@@ -5,6 +5,13 @@
     android:padding="16dp">
 
     <EditText
+        android:id="@+id/voluntaryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Give your activity a name"
+        android:padding="16dp"/>
+
+    <EditText
         android:id="@+id/volunteerNbr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

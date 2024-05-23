@@ -63,6 +63,7 @@ public class postPublish extends AppCompatActivity {
     private ImageView ivPics;
     private String imageBase64;
     private EditText introText;
+    private EditText introTitle;
     private ProgressDialog progressDialog;
     private static final String POST_URL = "https://studev.groept.be/api/a23PT414/uploadPost";
     private RequestQueue requestQueue;
@@ -73,6 +74,7 @@ public class postPublish extends AppCompatActivity {
     private Map<String, String[]> activityMap;
     private Map<String, String[]> donationMap;
     private FusedLocationProviderClient fusedLocationClient;
+    private String username;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,12 +83,16 @@ public class postPublish extends AppCompatActivity {
         setContentView(R.layout.activity_post_publish);
         requestQueue = Volley.newRequestQueue(this);
         initView();
+
+        Intent intent = getIntent();
+        username = intent.getStringExtra("username");
     }
 
 
     private void initView() {
         ivPics = findViewById(R.id.iv_photo);
         introText = findViewById(R.id.edit_text);
+        introTitle = findViewById(R.id.title);
         btnFunding = findViewById(R.id.btnFunding);
         btnActivity = findViewById(R.id.btnActivity);
         btnDonation = findViewById(R.id.btnDonation);
@@ -315,17 +321,20 @@ public class postPublish extends AppCompatActivity {
                 String[] donationData = donationMap.get("Donation");
                 params.put("image", imageBase64);
                 params.put("text", introText.getText().toString());
+                params.put("title", introTitle.getText().toString());
+                params.put("user", username);
                 if (fundData != null) {
                     params.put("fundgoal", fundData[0]);
                     params.put("fundbegin", fundData[1]);
                     params.put("fundend", fundData[2]);
                 }
                 if (voluntaryData != null) {
-                    params.put("volnbr", voluntaryData[0]);
-                    params.put("volreq", voluntaryData[1]);
-                    params.put("volbegin", voluntaryData[2]);
-                    params.put("volend", voluntaryData[3]);
-                    params.put("volcity", voluntaryData[4]);
+                    params.put("voltitle", voluntaryData[0]);
+                    params.put("volnbr", voluntaryData[1]);
+                    params.put("volreq", voluntaryData[2]);
+                    params.put("volbegin", voluntaryData[3]);
+                    params.put("volend", voluntaryData[4]);
+                    params.put("volcity", voluntaryData[5]);
                 }
                 if (donationData != null) {
                     params.put("donationgoal", donationData[0]);
@@ -396,6 +405,7 @@ public class postPublish extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.support_activity_input, null);
         builder.setView(dialogView);
 
+        final EditText voluntaryTitle = dialogView.findViewById(R.id.voluntaryTitle);
         final EditText volunteerNbr = dialogView.findViewById(R.id.volunteerNbr);
         final EditText requirements = dialogView.findViewById(R.id.requirements);
         final EditText beginDate = dialogView.findViewById(R.id.beginDate);
@@ -405,11 +415,12 @@ public class postPublish extends AppCompatActivity {
 // Load previously saved data if available
         if (activityMap.containsKey(title)) {
             String[] details = activityMap.get(title);
-            volunteerNbr.setText(details[0]);
-            requirements.setText(details[1]);
-            beginDate.setText(details[2]);
-            endDate.setText(details[3]);
-            locationEditText.setText(details[4]);
+            voluntaryTitle.setText(details[0]);
+            volunteerNbr.setText(details[1]);
+            requirements.setText(details[2]);
+            beginDate.setText(details[3]);
+            endDate.setText(details[4]);
+            locationEditText.setText(details[5]);
         }
         // Set up date picker for beginDate and endDate
         beginDate.setOnClickListener(v -> showDatePickerDialog(beginDate));
@@ -420,6 +431,7 @@ public class postPublish extends AppCompatActivity {
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Handle the positive button click event here
+            String volTitle = voluntaryTitle.getText().toString();
             String nbr = volunteerNbr.getText().toString();
             String quality = requirements.getText().toString();
             String start = beginDate.getText().toString();
@@ -429,7 +441,7 @@ public class postPublish extends AppCompatActivity {
             Store the input details to a HashMap object, to be shown on EditText block when the
             same button of support ways is clicked again
              */
-            activityMap.put(title, new String[]{nbr, quality, start, end, location});
+            activityMap.put(title, new String[]{volTitle, nbr, quality, start, end, location});
             // Process the input details as needed
         });
 
