@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Only request necessary permissions -->
     <uses-feature
         android:name="android.hardware.camera"
@@ -24,27 +23,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="29">
-
         <activity
-            android:name=".postOverview"
+            android:name=".personalSupport"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".postPublish"
+            android:name=".postOverview"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".postPublish"
+            android:exported="false"></activity>
         <activity
             android:name=".Search"
             android:exported="false" />
         <activity
             android:name=".Slideview"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".Homepage"
             android:exported="false" />
@@ -68,4 +67,5 @@
                 android:resource="@xml/files" />
         </provider>
     </application>
+
 </manifest>
