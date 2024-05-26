@@ -1,7 +1,6 @@
 package Program.Tech;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,8 +42,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class postOverview extends AppCompatActivity {
-    private static final String POST_ID = "27"; //To be replaced by intent conveyed value
-    private static final String USERNAME = "xky"; //To be replaced by intent conveyed value
+    private static String POST_ID; // Updated to non-final, will be set from intent
+    private String USERNAME ; //To be replaced by intent conveyed value
     private static final String UPDATE_FUND_URL = "https://studev.groept.be/api/a23PT414/joinFund";
     private static final String UPDATE_DONATION_URL = "https://studev.groept.be/api/a23PT414/joinDonation";
     private static final String UPDATE_VOLUNTEER_URL = "https://studev.groept.be/api/a23PT414/joinVolunteer";
@@ -83,11 +83,12 @@ public class postOverview extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+
         });
 
         imageRetrieved = findViewById(R.id.iv_photo);
-        postText =  findViewById(R.id.post_text);
-        postTitle =  findViewById(R.id.title);
+        postText = findViewById(R.id.post_text);
+        postTitle = findViewById(R.id.title);
         funding = findViewById(R.id.funding);
         cardFund = findViewById(R.id.cardViewFund);
         volunteer = findViewById(R.id.volunteer);
@@ -106,6 +107,10 @@ public class postOverview extends AppCompatActivity {
         quitButton = findViewById(R.id.quitButton);
         quitButton.setOnClickListener(v -> quitVolunteer());
 
+        // Get postID from intent
+        Intent intent = getIntent();
+        POST_ID = intent.getStringExtra("postID");
+        USERNAME = intent.getStringExtra("username"); // Add this line to get the username
 
         showPost(null, POST_ID);
     }
@@ -127,7 +132,6 @@ public class postOverview extends AppCompatActivity {
         super.onPause();
         handler.removeCallbacks(runnable); // When this activity is not in the main thread, stop updating
     }
-
 
     public void showPost(View caller, final String yourSpecificId) {
         // Construct the URL with the specific ID as a parameter
@@ -170,8 +174,7 @@ public class postOverview extends AppCompatActivity {
                 Log.e(TAG, "Request error: " + error.getMessage());
                 Toast.makeText(postOverview.this, "Request failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-        );
+        });
 
         requestQueue.add(jsonArrayRequest);
     }
@@ -205,12 +208,9 @@ public class postOverview extends AppCompatActivity {
                                 String donationCity = jsonSupport.getString("donationCity");
                                 //Show TextView block according to whether there is valid data in it.
                                 //Funding details
-                                if(databaseFundGoal.equals("null"))
-                                {
+                                if (databaseFundGoal.equals("null")) {
                                     cardFund.setVisibility(View.GONE);
-                                }
-                                else
-                                {
+                                } else {
                                     cardFund.setVisibility(View.VISIBLE);
                                     String fundingDetails = "Funding\n" + "I want to raise: " + databaseFundGoal + "\n" +
                                             "The funding begins:" + fundBegin + "\n" +
@@ -218,32 +218,26 @@ public class postOverview extends AppCompatActivity {
                                     funding.setText(fundingDetails);
                                 }
                                 //Voluntary details
-                                if(databaseVolunteerNbr.equals("null"))
-                                {
+                                if (databaseVolunteerNbr.equals("null")) {
                                     cardVolunteer.setVisibility(View.GONE);
-                                }
-                                else
-                                {
+                                } else {
                                     cardVolunteer.setVisibility(View.VISIBLE);
-                                    String voluntaryDetails = "Volunteer\n" + "Activity Name: " + databaseVoluntaryTitle +"\n"+
-                                            "We need " + databaseVolunteerNbr +" volunteers\n"+
-                                            "The volunteer should be "+ volunteerRequirement + "\n"+
+                                    String voluntaryDetails = "Volunteer\n" + "Activity Name: " + databaseVoluntaryTitle + "\n" +
+                                            "We need " + databaseVolunteerNbr + " volunteers\n" +
+                                            "The volunteer should be " + volunteerRequirement + "\n" +
                                             "The volunteer begins:" + voluntaryBegin + "\n" +
-                                            "The volunteer ends: " + voluntaryEnd+ "\n" +
+                                            "The volunteer ends: " + voluntaryEnd + "\n" +
                                             "Location: " + voluntaryCity;
                                     volunteer.setText(voluntaryDetails);
                                 }
                                 //Donation details
-                                if(databaseDonationGoal.equals("null"))
-                                {
+                                if (databaseDonationGoal.equals("null")) {
                                     cardDonation.setVisibility(View.GONE);
-                                }
-                                else
-                                {
+                                } else {
                                     cardDonation.setVisibility(View.VISIBLE);
                                     String donationDetails = "donation\n" + "I want: " + databaseDonationGoal + "\n" +
                                             "The donation begins:" + donationBegin + "\n" +
-                                            "The donation ends: " + donationEnd+ "\n" +
+                                            "The donation ends: " + donationEnd + "\n" +
                                             "Location: " + donationCity;
                                     donation.setText(donationDetails);
                                 }
@@ -258,12 +252,9 @@ public class postOverview extends AppCompatActivity {
                                 }
                                 //Set donation location
                                 if (databaseVoluntaryTitle.equals("null")) {
-                                    if (databaseFundGoal.equals("null"))
-                                    {
+                                    if (databaseFundGoal.equals("null")) {
                                         donationParams.topToBottom = R.id.iv_photo;
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         donationParams.topToBottom = R.id.cardViewFund;
                                     }
 
@@ -286,11 +277,11 @@ public class postOverview extends AppCompatActivity {
                 Log.e(TAG, "Request error: " + error.getMessage());
                 Toast.makeText(postOverview.this, "Show Support Request failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-        );
+        });
 
         requestQueue.add(jsonArrayRequest);
     }
+
     /**
      * Pop up dialogue blocks for users to pay money to fund
      */
@@ -304,7 +295,7 @@ public class postOverview extends AppCompatActivity {
 
         final TextView dialogFundGoal = dialogView.findViewById(R.id.fundGoal);
         final EditText editFund = dialogView.findViewById(R.id.editFund);
-        String showText = "We still need: "+databaseFundGoal+"€";
+        String showText = "We still need: " + databaseFundGoal + "€";
         dialogFundGoal.setText(showText);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
@@ -318,16 +309,14 @@ public class postOverview extends AppCompatActivity {
                     double targetValue = Double.parseDouble(databaseFundGoal); //The remaining fund goal
                     if (fundValue > targetValue) {
                         Toast.makeText(this, "Your kindness is overflow!", Toast.LENGTH_SHORT).show();
-                    } else if (fundValue>0)
-                    {
+                    } else if (fundValue > 0) {
                         double newGoal = targetValue - fundValue;
                         newFundGoal = String.valueOf(newGoal);
                         databaseFundGoal = newFundGoal;
                         Toast.makeText(this, "Funding received!\nThank you for your kindness!", Toast.LENGTH_SHORT).show();
                         //Submit the newFundGoal to the db.
                         submitFund(newFundGoal, inputText);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(this, "The funding value should be positive!", Toast.LENGTH_SHORT).show();
                     }
                 } catch (NumberFormatException e) {
@@ -347,13 +336,14 @@ public class postOverview extends AppCompatActivity {
     }
 
 
-    /** TRANSFER DATA TO DATABASE:
+    /**
+     * TRANSFER DATA TO DATABASE:
      * Update the new fund goal to table support
      * Insert a new activity record to table joinedSupport
      */
     public void submitFund(String newFundGoal, String newFundValue) {
-//Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
-        StringRequest submitRequest = new StringRequest (Request.Method.POST, UPDATE_FUND_URL,  new Response.Listener<String>() {
+        //Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
+        StringRequest submitRequest = new StringRequest(Request.Method.POST, UPDATE_FUND_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -373,7 +363,7 @@ public class postOverview extends AppCompatActivity {
             }
         };
 
-        StringRequest updateJoinedRecords = new StringRequest (Request.Method.POST, UPDATE_JOINED_RECORDS_URL,  new Response.Listener<String>() {
+        StringRequest updateJoinedRecords = new StringRequest(Request.Method.POST, UPDATE_JOINED_RECORDS_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -389,7 +379,7 @@ public class postOverview extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("name", USERNAME);
                 params.put("type", "Funding");
-                String fundDetails = "Fund amount: "+newFundValue+"€";
+                String fundDetails = "Fund amount: " + newFundValue + "€";
                 params.put("details", fundDetails);
                 return params;
             }
@@ -412,19 +402,17 @@ public class postOverview extends AppCompatActivity {
 
         final TextView dialogDonationGoal = dialogView.findViewById(R.id.donationGoal);
         final EditText dialogEditDonation = dialogView.findViewById(R.id.editDonation);
-        String showText = "We need: "+databaseDonationGoal;
+        String showText = "We need: " + databaseDonationGoal;
         dialogDonationGoal.setText(showText);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             // Handle the positive button click event here
             String inputText = dialogEditDonation.getText().toString().trim();
-            if (!inputText.isEmpty())
-            {
+            if (!inputText.isEmpty()) {
                 submitDonation(inputText);
                 Toast.makeText(this, "Thank you for your kindness!", Toast.LENGTH_SHORT).show();
                 Toast.makeText(this, "The announcer would contact you for details soon!", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Please enter a valid item!", Toast.LENGTH_SHORT).show();
             }
 
@@ -435,13 +423,15 @@ public class postOverview extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    /** TRANSFER DATA TO DATABASE:
+
+    /**
+     * TRANSFER DATA TO DATABASE:
      * Update the donationGet to table support
      * Insert a new activity record to table joinedSupport
      */
     public void submitDonation(String newDonation) {
-//Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
-        StringRequest submitRequest = new StringRequest (Request.Method.POST, UPDATE_DONATION_URL,  new Response.Listener<String>() {
+        //Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
+        StringRequest submitRequest = new StringRequest(Request.Method.POST, UPDATE_DONATION_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -461,7 +451,7 @@ public class postOverview extends AppCompatActivity {
             }
         };
 
-        StringRequest updateJoinedRecords = new StringRequest (Request.Method.POST, UPDATE_JOINED_RECORDS_URL,  new Response.Listener<String>() {
+        StringRequest updateJoinedRecords = new StringRequest(Request.Method.POST, UPDATE_JOINED_RECORDS_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -477,7 +467,7 @@ public class postOverview extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("name", USERNAME);
                 params.put("type", "Donation");
-                String donationDetails = "Donation Items: "+newDonation;
+                String donationDetails = "Donation Items: " + newDonation;
                 params.put("details", donationDetails);
                 return params;
             }
@@ -487,45 +477,45 @@ public class postOverview extends AppCompatActivity {
         requestQueue.add(updateJoinedRecords);
     }
 
-    /** RESPOND OF PRESS OF JOIN BUTTON
+    /**
+     * RESPOND OF PRESS OF JOIN BUTTON
      * Examine whether the enrollment is full and calculate the new volunteer nbr required
      */
-    private void joinVolunteer()
-    {
+    private void joinVolunteer() {
         Toast.makeText(postOverview.this, "Thank you for joining us!", Toast.LENGTH_SHORT).show();
         joinButton.setVisibility(View.GONE);
         quitButton.setVisibility(View.VISIBLE);
-        int volunteerNumber=Integer.parseInt(databaseVolunteerNbr);
-        if (volunteerNumber>0)
-        {
+        int volunteerNumber = Integer.parseInt(databaseVolunteerNbr);
+        if (volunteerNumber > 0) {
             volunteerNumber--;
-            submitVolunteer(String.valueOf(volunteerNumber),databaseVoluntaryTitle);
-        }
-        else {
+            submitVolunteer(String.valueOf(volunteerNumber), databaseVoluntaryTitle);
+        } else {
             Toast.makeText(postOverview.this, "Enrollment is full!", Toast.LENGTH_SHORT).show();
         }
     }
-    /** RESPOND OF PRESS OF QUIT BUTTON
+
+    /**
+     * RESPOND OF PRESS OF QUIT BUTTON
      * Calculate the new volunteer nbr required
      */
-    private void quitVolunteer()
-    {
+    private void quitVolunteer() {
         Toast.makeText(postOverview.this, "You have quitted the activity", Toast.LENGTH_SHORT).show();
         quitButton.setVisibility(View.GONE);
         joinButton.setVisibility(View.VISIBLE);
-        int volunteerNumber=Integer.parseInt(databaseVolunteerNbr);
+        int volunteerNumber = Integer.parseInt(databaseVolunteerNbr);
         volunteerNumber++;
-        String voluntaryDetails = "Voluntary Activity: "+databaseVoluntaryTitle;
+        String voluntaryDetails = "Voluntary Activity: " + databaseVoluntaryTitle;
         deleteVoluntaryRecord(String.valueOf(volunteerNumber), voluntaryDetails);
     }
 
-    /** TRANSFER DATA TO DATABASE:
+    /**
+     * TRANSFER DATA TO DATABASE:
      * Update the volunteer nbr required to table support
      * Insert a new activity record to table joinedSupport
      */
     public void submitVolunteer(String newVolunteerNbr, String volDetails) {
-//Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
-        StringRequest submitRequest = new StringRequest (Request.Method.POST, UPDATE_VOLUNTEER_URL,  new Response.Listener<String>() {
+        //Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
+        StringRequest submitRequest = new StringRequest(Request.Method.POST, UPDATE_VOLUNTEER_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -545,7 +535,7 @@ public class postOverview extends AppCompatActivity {
             }
         };
 
-        StringRequest updateJoinedRecords = new StringRequest (Request.Method.POST, UPDATE_JOINED_RECORDS_URL,  new Response.Listener<String>() {
+        StringRequest updateJoinedRecords = new StringRequest(Request.Method.POST, UPDATE_JOINED_RECORDS_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -561,7 +551,7 @@ public class postOverview extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("name", USERNAME);
                 params.put("type", "Volunteer");
-                String voluntaryDetails = "Voluntary Activity: "+databaseVoluntaryTitle;
+                String voluntaryDetails = "Voluntary Activity: " + databaseVoluntaryTitle;
                 params.put("details", voluntaryDetails);
                 return params;
             }
@@ -572,8 +562,8 @@ public class postOverview extends AppCompatActivity {
     }
 
     public void deleteVoluntaryRecord(String newVolunteerNbr, String volDetail) {
-//Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
-        StringRequest submitRequest = new StringRequest (Request.Method.POST, UPDATE_VOLUNTEER_URL,  new Response.Listener<String>() {
+        //Execute the Volley call. Note that we are not appending the image string to the URL, that happens further below
+        StringRequest submitRequest = new StringRequest(Request.Method.POST, UPDATE_VOLUNTEER_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();
@@ -593,7 +583,7 @@ public class postOverview extends AppCompatActivity {
             }
         };
 
-        StringRequest updateJoinedRecords = new StringRequest (Request.Method.POST, QUIT_VOLUNTEER_URL,  new Response.Listener<String>() {
+        StringRequest updateJoinedRecords = new StringRequest(Request.Method.POST, QUIT_VOLUNTEER_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //Toast.makeText(postOverview.this, "Post request executed", Toast.LENGTH_SHORT).show();

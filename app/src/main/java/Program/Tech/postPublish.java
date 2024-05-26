@@ -304,6 +304,7 @@ public class postPublish extends AppCompatActivity {
                 progressDialog.dismiss();
                 Toast.makeText(postPublish.this, "Post request executed", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(postPublish.this, Slideview.class);
+                intent.putExtra("username", username);
                 startActivity(intent);
             }
         }, new Response.ErrorListener() {
@@ -518,6 +519,7 @@ public class postPublish extends AppCompatActivity {
 
     public void back(View view) {
         Intent intent = new Intent(this,Slideview.class);
+        intent.putExtra("username", username);
         startActivity(intent);
     }
 }

@@ -11,10 +11,10 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string-array name="filter_items">
-        <item>Newest</item>
-        <item>Oldest</item>
-        <item>Most Viewed</item>
-        <item>Most Like</item>
+        <item>All</item>
+        <item>Donation</item>
+        <item>Volunteer</item>
+        <item>Fund</item>
     </string-array>
 
     <string name="lorem_ipsum">

@@ -2,6 +2,7 @@ package Program.Tech;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +33,7 @@ import java.util.List;
 
 public class personalSupport extends AppCompatActivity {
 
-    private static final String USERNAME= "xky"; //To be replaced by username conveyed
+    private  String USERNAME; //To be replaced by username conveyed
     private static final String SHOW_JOINED_URL = "https://studev.groept.be/api/a23PT414/showJoinedSupport";
     private static final String SHOW_PUBLISHED_URL = "https://studev.groept.be/api/a23PT414/showPublishedSupport";
     private TextView username;
@@ -48,6 +49,9 @@ public class personalSupport extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_support);
+
+        Intent intent = getIntent();
+        USERNAME = intent.getStringExtra("username");
 
         username = findViewById(R.id.username);
         menuPublished = findViewById(R.id.menu_published);
@@ -140,7 +144,8 @@ public class personalSupport extends AppCompatActivity {
                                 for (int i = 0; i < response.length(); i++) {
                                     JSONObject jsonObject = response.getJSONObject(i);
                                     String title = jsonObject.getString("introTitle");
-                                    publishedActivities.add(new showProfileAct(title, "No"));
+                                    String content = jsonObject.getString("introText");
+                                    publishedActivities.add(new showProfileAct(title, content));
                                 }
 
                             } else {
